@@ -7,7 +7,6 @@ Currently, Prolly includes an implementation of Bloom filter, with other data st
 [![Crates.io](https://img.shields.io/crates/v/prolly.svg)](https://crates.io/crates/prolly)
 [![Docs.rs](https://docs.rs/prolly/badge.svg)](https://docs.rs/prolly)
 [![CI](https://github.com/arunma/prolly/workflows/CI/badge.svg)](https://github.com/arunma/prolly/actions)
-[![Latest Version](https://img.shields.io/crates/v/cargo-tarpaulin.svg)](https://crates.io/crates/cargo-tarpaulin)
 [![License:MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Coverage Status](https://coveralls.io/repos/github/arunma/prolly/badge.svg?branch=main)](https://coveralls.io/github/arunma/prolly?branch=main)
 
