@@ -1,0 +1,22 @@
+[package]
+name = "prolly"
+version = "0.1.0"
+edition = "2021"
+description = "Probabilistic data structures for Rust"
+repository = "https://github.com/arunma/prolly"
+license = "MIT OR Apache-2.0"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+bit-vec ="0.6"
+thiserror = "1.0"
+siphasher = "0.3"
+getrandom = "0.2"
+
+[dev-dependencies]
+pretty_assertions = "1.3"
+quickcheck = "1.0"
+quickcheck_macros = "1.0"
+rand = "0.8"
