@@ -31,8 +31,8 @@ jobs:
           version: 0.22.0
           args: '--ignore-tests --out Lcov'
 
-      - name: upload to Coveralls
+      - name: Upload to Coveralls
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secrets.COVERALLS_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: './lcov.info'
