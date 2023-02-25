@@ -1,14 +1,14 @@
-# Prolly: A Rust library for Probabilistic Data Structures
+# PDSA: A Rust library for Probabilistic Data Structures
 
-Prolly is a collection of probabilistic data structures implemented in Rust. These data structures are useful for various applications where approximate answers or approximations to subsets are sufficient.
+PDSA is a collection of probabilistic data structures implemented in Rust. These data structures are useful for various applications where approximate answers or approximations to subsets are sufficient.
 
-Currently, Prolly includes an implementation of Bloom filter, with other data structures to be added in the future releases.
+Currently, PDSA includes an implementation of Bloom filter, with other data structures to be added in the future releases.
 
-[![Crates.io](https://img.shields.io/crates/v/prolly.svg)](https://crates.io/crates/prolly)
-[![Docs.rs](https://docs.rs/prolly/badge.svg)](https://docs.rs/prolly)
-[![CI](https://github.com/arunma/prolly/workflows/CI/badge.svg)](https://github.com/arunma/prolly/actions)
+[![Crates.io](https://img.shields.io/crates/v/pdsa.svg)](https://crates.io/crates/pdsa)
+[![Docs.rs](https://docs.rs/pdsa/badge.svg)](https://docs.rs/pdsa)
+[![CI](https://github.com/arunma/pdsa/workflows/CI/badge.svg)](https://github.com/arunma/pdsa/actions)
 [![License:MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Coverage Status](https://coveralls.io/repos/github/arunma/prolly/badge.svg?branch=main)](https://coveralls.io/github/arunma/prolly?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/arunma/pdsa/badge.svg?branch=main)](https://coveralls.io/github/arunma/pdsa?branch=main)
 
 ## Installation
 
@@ -16,7 +16,7 @@ Add the following line to your Cargo.toml file:
 
 ```toml
 [dependencies]
-prolly = "0.1.0"
+pdsa = "0.1.0"
 ```
 ## Usage 
 
@@ -24,7 +24,7 @@ prolly = "0.1.0"
 
 ```rust
 
-use prolly::BloomFilter;
+use pdsa::BloomFilter;
 
 fn main() {
     // Create a Bloom filter with 1000 items and a false positive rate of 1%
@@ -48,7 +48,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Prolly is licensed under the MIT license. See the LICENSE file for details.
+PDSA is licensed under the MIT license. See the LICENSE file for details.
 
 
 

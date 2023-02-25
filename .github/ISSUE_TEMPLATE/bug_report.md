@@ -37,7 +37,7 @@ Steps to reproduce the behavior:
 <!-- Please fill the following information. -->
 
 - OS: [e.g. Ubuntu 20.04]
-- prolly version: [e.g. 0.1.0]
+- pdsa version: [e.g. 0.1.0]
 
 ## Additional context
 
