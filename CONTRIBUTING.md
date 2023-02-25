@@ -1,6 +1,6 @@
 # Contribution guidelines
 
-First off, thank you for considering contributing to prolly.
+First off, thank you for considering contributing to pdsa.
 
 If your contribution is not straightforward, please first discuss the change you
 wish to make by creating a new issue before making the change.
@@ -8,7 +8,7 @@ wish to make by creating a new issue before making the change.
 ## Reporting issues
 
 Before reporting an issue on the
-[issue tracker](https://github.com/arunma/prolly/issues),
+[issue tracker](https://github.com/arunma/pdsa/issues),
 please check that it has not already been reported by searching for some related
 keywords.
 
@@ -19,7 +19,7 @@ Try to do one pull request per change.
 ### Updating the changelog
 
 Update the changes you have made in
-[CHANGELOG](https://github.com/arunma/prolly/blob/main/CHANGELOG.md)
+[CHANGELOG](https://github.com/arunma/pdsa/blob/main/CHANGELOG.md)
 file under the **Unreleased** section.
 
 Add the changes of your pull request to one of the following subsections,
@@ -42,8 +42,8 @@ If the required subsection does not exist yet under **Unreleased**, create it!
 This is no different than other Rust projects.
 
 ```shell
-git clone https://github.com/arunma/prolly
-cd prolly
+git clone https://github.com/arunma/pdsa
+cd pdsa
 cargo test
 ```
 

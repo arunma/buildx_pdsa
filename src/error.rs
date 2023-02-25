@@ -1,9 +1,9 @@
 use thiserror::Error;
 
-pub type ProllyResult<T> = std::result::Result<T, ProllyError>;
+pub type PDSAResult<T> = std::result::Result<T, PDSAError>;
 
 #[derive(Debug, Error, PartialEq)]
-pub enum ProllyError {
+pub enum PDSAError {
     #[error("Input value error: {0:?}")]
     Input(String),
     #[error("Internal error: {0:?}")]

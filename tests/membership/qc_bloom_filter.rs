@@ -1,4 +1,4 @@
-use prolly::membership::bloom_filter::BloomFilter;
+use pdsa::membership::bloom_filter::BloomFilter;
 use quickcheck::Arbitrary;
 use rand::Rng;
 
