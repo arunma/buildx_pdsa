@@ -6,9 +6,11 @@ Currently, PDSA includes an implementation of Bloom filter, with other data stru
 
 [![Crates.io](https://img.shields.io/crates/v/pdsa.svg)](https://crates.io/crates/pdsa)
 [![Docs.rs](https://docs.rs/pdsa/badge.svg)](https://docs.rs/pdsa)
-[![CI](https://github.com/arunma/pdsa/workflows/CI/badge.svg)](https://github.com/arunma/pdsa/actions)
+[![Build](https://github.com/arunma/pdsa/actions/workflows/rust.yml/badge.svg)](https://github.com/arunma/pdsa/actions/workflows/rust.yml)
 [![License:MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Coverage Status](https://coveralls.io/repos/github/arunma/pdsa/badge.svg?branch=main)](https://coveralls.io/github/arunma/pdsa?branch=main)
+
+
 
 ## Installation
 
