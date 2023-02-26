@@ -2,8 +2,6 @@
 
 BuildX PDSA is a collection of probabilistic data structures implemented in Rust. These data structures are useful for various applications where approximate answers or approximations to subsets are sufficient.
 
-[![Crates.io](https://img.shields.io/crates/v/buildx_pdsa.svg)](https://crates.io/crates/buildx_pdsa)
-[![Docs.rs](https://docs.rs/buildx_pdsa/badge.svg)](https://docs.rs/buildx_pdsa)
 [![Build](https://github.com/arunma/buildx_pdsa/actions/workflows/rust.yml/badge.svg)](https://github.com/arunma/buildx_pdsa/actions/workflows/rust.yml)
 [![License:MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Coverage Status](https://coveralls.io/repos/github/arunma/buildx_pdsa/badge.svg?branch=main)](https://coveralls.io/github/arunma/buildx_pdsa?branch=main)
