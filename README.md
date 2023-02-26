@@ -1,4 +1,4 @@
-# BuildX PDSA: A builx_x project on Probabilistic Data Structures in Rust
+# BuildX PDSA: A build_x project on Probabilistic Data Structures in Rust
 
 BuildX PDSA is a collection of probabilistic data structures implemented in Rust. These data structures are useful for various applications where approximate answers or approximations to subsets are sufficient.
 
