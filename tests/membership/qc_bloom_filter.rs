@@ -1,4 +1,4 @@
-use pdsa::membership::bloom_filter::BloomFilter;
+use buildx_pdsa::membership::bloom_filter::BloomFilter;
 use quickcheck::Arbitrary;
 use rand::Rng;
 

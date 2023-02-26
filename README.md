@@ -1,14 +1,12 @@
-# PDSA: A Rust library for Probabilistic Data Structures
+# BuildX PDSA: A builx_x project on Probabilistic Data Structures in Rust
 
-PDSA is a collection of probabilistic data structures implemented in Rust. These data structures are useful for various applications where approximate answers or approximations to subsets are sufficient.
+BuildX PDSA is a collection of probabilistic data structures implemented in Rust. These data structures are useful for various applications where approximate answers or approximations to subsets are sufficient.
 
-Currently, PDSA includes an implementation of Bloom filter, with other data structures to be added in the future releases.
-
-[![Crates.io](https://img.shields.io/crates/v/pdsa.svg)](https://crates.io/crates/pdsa)
-[![Docs.rs](https://docs.rs/pdsa/badge.svg)](https://docs.rs/pdsa)
-[![Build](https://github.com/arunma/pdsa/actions/workflows/rust.yml/badge.svg)](https://github.com/arunma/pdsa/actions/workflows/rust.yml)
+[![Crates.io](https://img.shields.io/crates/v/buildx_pdsa.svg)](https://crates.io/crates/buildx_pdsa)
+[![Docs.rs](https://docs.rs/buildx_pdsa/badge.svg)](https://docs.rs/buildx_pdsa)
+[![Build](https://github.com/arunma/buildx_pdsa/actions/workflows/rust.yml/badge.svg)](https://github.com/arunma/buildx_pdsa/actions/workflows/rust.yml)
 [![License:MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Coverage Status](https://coveralls.io/repos/github/arunma/pdsa/badge.svg?branch=main)](https://coveralls.io/github/arunma/pdsa?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/arunma/buildx_pdsa/badge.svg?branch=main)](https://coveralls.io/github/arunma/buildx_pdsa?branch=main)
 
 
 
@@ -18,7 +16,7 @@ Add the following line to your Cargo.toml file:
 
 ```toml
 [dependencies]
-pdsa = "0.1.0"
+buildx_pdsa = "0.1.0"
 ```
 ## Usage 
 
@@ -50,7 +48,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-PDSA is licensed under the MIT license. See the LICENSE file for details.
+BuildX PDSA is licensed under the MIT license. See the LICENSE file for details.
 
 
 
