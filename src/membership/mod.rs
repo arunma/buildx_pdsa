@@ -1,8 +1,6 @@
 pub mod bloom_filter;
 pub mod counting_bloom_filter;
 
-use std::hash::Hash;
-
 use siphasher::sip128::SipHasher24;
 
 use crate::error::PDSAError::Input;
@@ -77,6 +75,6 @@ fn optimal_m(num_items: usize, false_positive_rate: f64) -> usize {
 ///
 /// Returns the optimal number of hash functions for the given number of items and size of the bit vector.
 ///
-fn optimal_k(n: usize, m: usize) -> u32 {
-    (m as f64 / n as f64 * 2.0f64.ln()).round() as u32
+fn optimal_k(n: usize, m: usize) -> usize {
+    (m as f64 / n as f64 * 2.0f64.ln()).round() as usize
 }

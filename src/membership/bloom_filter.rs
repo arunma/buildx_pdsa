@@ -32,17 +32,19 @@
 
 use std::{hash::Hash, marker::PhantomData};
 
-use super::{create_hasher_with_key, generate_random_key, optimal_k, optimal_m, validate};
 use bit_vec::BitVec;
 use siphasher::sip128::{Hasher128, SipHasher24};
 
 use crate::error::PDSAResult as Result;
+use crate::membership::{
+    create_hasher_with_key, generate_random_key, optimal_k, optimal_m, validate,
+};
 
 #[derive(Debug)]
 pub struct BloomFilter<T: ?Sized + Hash> {
     bits: BitVec,
     m: usize,
-    k: u32,
+    k: usize,
     hasher: SipHasher24,
     _p: PhantomData<T>,
 }
@@ -159,7 +161,7 @@ impl<T: ?Sized + Hash> BloomFilter<T> {
     /// assert_eq!(k, 7);
     /// ```
 
-    pub fn number_of_hashes(&self) -> u32 {
+    pub fn number_of_hashes(&self) -> usize {
         self.k
     }
 
@@ -179,9 +181,9 @@ impl<T: ?Sized + Hash> BloomFilter<T> {
     }
 
     /// Computes the set of bit indices to be set for an item
-    fn get_set_bits(&self, item: &T, k: u32, m: usize, mut hasher: SipHasher24) -> Vec<usize> {
+    fn get_set_bits(&self, item: &T, k: usize, m: usize, hasher: SipHasher24) -> Vec<usize> {
         let (hash1, hash2) = self.get_hash_pair(item, hasher);
-        let mut set_bits = Vec::with_capacity(k as usize);
+        let mut set_bits = Vec::with_capacity(k);
         if k == 1 {
             let bit = hash1 % m as u64;
             set_bits.push(bit as usize);
@@ -192,7 +194,7 @@ impl<T: ?Sized + Hash> BloomFilter<T> {
             let bit = hash % m as u64;
             set_bits.push(bit as usize);
         }
-        assert!(set_bits.len() == k as usize);
+        assert!(set_bits.len() == k);
         set_bits
     }
 
