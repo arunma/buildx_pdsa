@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ matrix.version }}
           components: rustfmt
@@ -59,7 +59,7 @@ jobs:
   #     fail-fast: false
   #   steps:
   #     - uses: actions/checkout@v2
-  #     - uses: dtolnay/rust-toolchain@master
+  #     - uses: dtolnay/rust-toolchain@stable
   #       with:
   #         toolchain: ${{ matrix.version }}
   #     - name: cache
@@ -86,7 +86,7 @@ jobs:
   #     fail-fast: false
   #   steps:
   #     - uses: actions/checkout@v2
-  #     - uses: dtolnay/rust-toolchain@master
+  #     - uses: dtolnay/rust-toolchain@stable
   #       with:
   #         toolchain: ${{ matrix.version }}
   #     - name: cache
