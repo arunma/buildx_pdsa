@@ -22,7 +22,7 @@ buildx_pdsa = "0.1.0"
 
 ```rust
 
-use pdsa::BloomFilter;
+use buildx_pdsa::membership::bloom_filter::BloomFilter;
 
 fn main() {
     // Create a Bloom filter with 1000 items and a false positive rate of 1%
