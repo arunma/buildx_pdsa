@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::{hash::Hash, marker::PhantomData};
 
 use siphasher::sip128::{Hasher128, SipHasher24};
@@ -7,7 +8,6 @@ use crate::membership::{
     create_hasher_with_key, generate_random_key, optimal_k, optimal_m, validate,
 };
 
-//TODO - Need to check whether the item exists before removing the item from the counter
 #[derive(Debug)]
 pub struct CountingBloomFilter<T: ?Sized + Hash> {
     //TODO
@@ -18,7 +18,7 @@ pub struct CountingBloomFilter<T: ?Sized + Hash> {
     _p: PhantomData<T>,
 }
 
-impl<T: ?Sized + Hash> CountingBloomFilter<T> {
+impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     pub fn new(num_items: usize, false_positive_rate: f64) -> Result<Self> {
         validate(num_items, false_positive_rate)?;
         let m = optimal_m(num_items, false_positive_rate);
@@ -36,18 +36,20 @@ impl<T: ?Sized + Hash> CountingBloomFilter<T> {
     }
 
     pub fn insert(&mut self, item: &T) {
-        //TODO Increment counter for every item addition
         self.get_set_bits(item, self.k, self.m, self.hasher)
             .iter()
             .for_each(|&i| self.counter[i] = self.counter[i].saturating_add(1));
     }
 
     pub fn delete(&mut self, item: &T) {
-        self.get_set_bits(item, self.k, self.m, self.hasher)
-            .iter()
-            .for_each(|&i| {
-                self.counter[i] = self.counter[i].saturating_sub(1);
-            })
+        let is_present = self.contains(item);
+        if is_present {
+            self.get_set_bits(item, self.k, self.m, self.hasher)
+                .iter()
+                .for_each(|&i| {
+                    self.counter[i] = self.counter[i].saturating_sub(1);
+                });
+        }
     }
 
     pub fn contains(&self, item: &T) -> bool {
@@ -189,7 +191,20 @@ mod tests {
         assert_eq!(bf.estimated_count("hello"), 1);
         assert_eq!(bf.estimated_count("hel12lo1"), 0);
 
+        Ok(())
+    }
+
+    #[test]
+    fn delete_and_check() -> Result<()> {
+        let mut bf: CountingBloomFilter<str> = CountingBloomFilter::new(10, 0.01)?;
+        bf.insert("hello");
+        bf.insert("world");
+        assert_eq!(bf.estimated_count("world"), 1);
+        assert_eq!(bf.estimated_count("hello"), 1);
+        assert_eq!(bf.estimated_count("hel12lo1"), 0);
+
         bf.delete("world");
+        bf.delete("hello12");
         assert_eq!(bf.estimated_count("world"), 0);
         assert_eq!(bf.estimated_count("hello"), 1);
         Ok(())
