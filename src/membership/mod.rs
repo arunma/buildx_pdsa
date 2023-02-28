@@ -76,5 +76,10 @@ fn optimal_m(num_items: usize, false_positive_rate: f64) -> usize {
 /// Returns the optimal number of hash functions for the given number of items and size of the bit vector.
 ///
 fn optimal_k(n: usize, m: usize) -> usize {
-    (m as f64 / n as f64 * 2.0f64.ln()).round() as usize
+    let k = (m as f64 / n as f64 * 2.0f64.ln()).round() as usize;
+    if k < 1 {
+        1
+    } else {
+        k
+    }
 }

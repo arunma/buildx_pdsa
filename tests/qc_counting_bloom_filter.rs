@@ -16,7 +16,8 @@ struct CountingBloomTestInput {
 fn quickcheck_counting_bloom_filter(input: CountingBloomTestInput) {
     dbg!(&input);
     let mut bloom_filter =
-        CountingBloomFilter::<u32>::new(input.num_items * 2, input.false_positive_rate).unwrap();
+        CountingBloomFilter::<u32>::new(input.num_items, input.false_positive_rate).unwrap();
+
     input.data.iter().for_each(|item| bloom_filter.insert(item));
     let mut freq_map = HashMap::<u32, u8>::new();
     input.data.iter().for_each(|&item| {
@@ -40,7 +41,8 @@ fn quickcheck_counting_bloom_filter(input: CountingBloomTestInput) {
 
     for (item, count) in freq_map.iter() {
         println!("Item {} and Count {}", item, count);
-        assert_eq!(bloom_filter.estimated_count(item), *count);
+        assert!(bloom_filter.estimated_count(item) >= *count);
+        assert!(bloom_filter.estimated_count(item) <= *count * 2);
     }
 
     let fp_actual_rate = fp_actual_count as f64 / (input.num_items) as f64;

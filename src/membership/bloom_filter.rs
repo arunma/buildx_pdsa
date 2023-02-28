@@ -74,7 +74,6 @@ impl<T: ?Sized + Hash> BloomFilter<T> {
         validate(num_items, false_positive_rate)?;
         let m = optimal_m(num_items, false_positive_rate);
         let k = optimal_k(num_items, m);
-        println!("m: {}, k: {}", m, k);
         let bits = BitVec::from_elem(m, false);
         let random_key = generate_random_key();
         let hasher = create_hasher_with_key(random_key);
