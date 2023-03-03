@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
 use quickcheck::Arbitrary;
 use rand::Rng;
 

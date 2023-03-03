@@ -36,7 +36,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// # Example
     ///
     /// ```
-    /// use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
     ///
     /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
     ///
@@ -74,7 +74,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// # Example
     ///
     /// ```
-    /// use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
     ///
     /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
     /// filter.insert(&"foo");
@@ -98,7 +98,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// # Example
     ///
     /// ```
-    /// use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
     ///
     /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
     /// filter.insert(&"foo");
@@ -127,7 +127,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// # Example
     ///
     /// ```
-    /// use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
     ///
     /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
     /// filter.insert(&"foo");
@@ -150,7 +150,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// # Example
     ///
     /// ```
-    /// use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
     ///
     /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
     /// filter.insert(&"foo");
@@ -178,7 +178,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// # Examples
     ///
     /// ```
-    /// use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
     ///
     /// let bloom_filter = CountingBloomFilter::<String>::new(1000, 0.01).unwrap();
     /// let k = bloom_filter.number_of_hashes();
@@ -194,7 +194,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// # Examples
     ///
     /// ```
-    /// use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
     ///
     /// let bloom_filter = CountingBloomFilter::<&str>::new(1000, 0.01).unwrap();
     /// let m = bloom_filter.number_of_counters();
@@ -209,7 +209,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// # Example
     ///
     /// ```
-    /// use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
     ///
     /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
     /// assert_eq!(filter.len(), 0);
@@ -226,7 +226,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// # Example
     ///
     /// ```
-    /// use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
     ///
     /// let mut filter = CountingBloomFilter::<str>::new(1000, 0.01).unwrap();
     /// assert_eq!(filter.expected_num_items(), 1000);
@@ -240,7 +240,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// # Example
     ///
     /// ```
-    /// use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
     ///
     /// let mut filter = CountingBloomFilter::<str>::new(1000, 0.01).unwrap();
     /// assert_eq!(filter.false_positive_rate(), 0.01);
