@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use pdsa::membership::{bloom_filter::BloomFilter, counting_bloom_filter::CountingBloomFilter};
+use pdsa::membership::counting_bloom_filter::CountingBloomFilter;
 use quickcheck::Arbitrary;
 use rand::Rng;
 
@@ -40,7 +40,12 @@ fn quickcheck_counting_bloom_filter(input: CountingBloomTestInput) {
     }
 
     for (item, count) in freq_map.iter() {
-        println!("Item {} and Count {}", item, count);
+        println!(
+            "Item {}, count {} and estimated count {}",
+            item,
+            count,
+            bloom_filter.estimated_count(item)
+        );
         assert!(bloom_filter.estimated_count(item) >= *count);
         assert!(bloom_filter.estimated_count(item) <= *count * 2);
     }
