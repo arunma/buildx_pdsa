@@ -186,6 +186,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
+name = "buildx_pdsa"
+version = "0.1.0"
+dependencies = [
+ "bit-vec",
+ "cargo-audit",
+ "cargo-tarpaulin",
+ "getrandom",
+ "pretty_assertions",
+ "quickcheck",
+ "quickcheck_macros",
+ "rand",
+ "siphasher",
+ "thiserror",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1211,22 +1227,6 @@ name = "owo-colors"
 version = "3.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c1b04fb49957986fdce4d6ee7a65027d55d4b6d2265e5848bbb507b58ccfdb6f"
-
-[[package]]
-name = "pdsa"
-version = "0.1.0"
-dependencies = [
- "bit-vec",
- "cargo-audit",
- "cargo-tarpaulin",
- "getrandom",
- "pretty_assertions",
- "quickcheck",
- "quickcheck_macros",
- "rand",
- "siphasher",
- "thiserror",
-]
 
 [[package]]
 name = "percent-encoding"

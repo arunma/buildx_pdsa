@@ -1,9 +1,9 @@
 [package]
-name = "pdsa"
+name = "buildx_pdsa"
 version = "0.1.0"
 edition = "2021"
 description = "Probabilistic data structures for Rust"
-repository = "https://github.com/arunma/pdsa"
+repository = "https://github.com/arunma/buildx_pdsa"
 license = "MIT OR Apache-2.0"
 
 [lib]

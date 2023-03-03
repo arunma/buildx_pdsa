@@ -13,7 +13,7 @@
 //! # Example
 //!
 //! ```
-//! use pdsa::membership::bloom_filter::BloomFilter;
+//! use buildx_pdsa::membership::bloom_filter::BloomFilter;
 //!
 //! let bloom_filter = BloomFilter::<u32>::new(100, 0.01).unwrap();
 //! // Create a Bloom filter with 1000 items and a false positive rate of 1%
@@ -65,7 +65,7 @@ impl<T: ?Sized + Hash> BloomFilter<T> {
     /// # Examples
     ///
     /// ```
-    /// use pdsa::membership::bloom_filter::BloomFilter;
+    /// use buildx_pdsa::membership::bloom_filter::BloomFilter;
     ///
     /// let bloom_filter = BloomFilter::<u32>::new(100, 0.01).unwrap();
     /// ```
@@ -95,7 +95,7 @@ impl<T: ?Sized + Hash> BloomFilter<T> {
     /// # Examples
     ///
     /// ```
-    /// use pdsa::membership::bloom_filter::BloomFilter;
+    /// use buildx_pdsa::membership::bloom_filter::BloomFilter;
     ///
     /// let mut bloom_filter = BloomFilter::new(1000, 0.01).unwrap();
     /// let item = "Hello, world!";
@@ -124,7 +124,7 @@ impl<T: ?Sized + Hash> BloomFilter<T> {
     /// # Examples
     ///
     /// ```
-    /// use pdsa::membership::bloom_filter::BloomFilter;
+    /// use buildx_pdsa::membership::bloom_filter::BloomFilter;
     ///
     /// let mut bloom_filter = BloomFilter::new(1000, 0.01).unwrap();
     /// let item = "Hello, world!";
@@ -153,7 +153,7 @@ impl<T: ?Sized + Hash> BloomFilter<T> {
     /// # Examples
     ///
     /// ```
-    /// use pdsa::membership::bloom_filter::BloomFilter;
+    /// use buildx_pdsa::membership::bloom_filter::BloomFilter;
     ///
     /// let bloom_filter = BloomFilter::<String>::new(1000, 0.01).unwrap();
     /// let k = bloom_filter.number_of_hashes();
@@ -169,7 +169,7 @@ impl<T: ?Sized + Hash> BloomFilter<T> {
     /// # Examples
     ///
     /// ```
-    /// use pdsa::membership::bloom_filter::BloomFilter;
+    /// use buildx_pdsa::membership::bloom_filter::BloomFilter;
     ///
     /// let bloom_filter = BloomFilter::<&str>::new(1000, 0.01).unwrap();
     /// let m = bloom_filter.number_of_bits();
