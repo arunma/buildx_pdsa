@@ -221,8 +221,6 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
         self.len
     }
 
-
-
     /// Returns if there are currently no items stored in the Bloom filter.
     ///
     /// # Example
@@ -237,7 +235,7 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
     /// assert_eq!(filter.is_empty(), false);
     /// ```
     pub fn is_empty(&self) -> bool {
-        self.len==0
+        self.len == 0
     }
 
     /// Returns the expected number of items to be inserted into the Bloom filter.
