@@ -1,4 +1,3 @@
-
 use std::collections::HashMap;
 
 use buildx_pdsa::frequency::count_min_sketch::CountMinSketch;
@@ -25,8 +24,10 @@ fn quickcheck_counting_bloom_filter(input: CountMinSketchInput) {
         let count = freq_map.entry(item).or_insert(0);
         *count += 1;
     });
-    assert!(input.data.iter().all(|item| count_sketch.estimated_count(item)>0));
-
+    assert!(input
+        .data
+        .iter()
+        .all(|item| count_sketch.estimated_count(item) > 0));
 }
 
 impl Arbitrary for CountMinSketchInput {
