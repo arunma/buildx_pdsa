@@ -221,6 +221,23 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
         self.len
     }
 
+    /// Returns if there are currently no items stored in the Bloom filter.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
+    ///
+    /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
+    /// assert_eq!(filter.is_empty(), true);
+    ///
+    /// filter.insert("hello");
+    /// assert_eq!(filter.is_empty(), false);
+    /// ```
+    pub fn is_empty(&self) -> bool {
+        self.len == 0
+    }
+
     /// Returns the expected number of items to be inserted into the Bloom filter.
     ///
     /// # Example
