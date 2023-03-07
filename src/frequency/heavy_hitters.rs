@@ -1,10 +1,13 @@
-use std::{collections::{BinaryHeap, HashMap}, hash::Hash};
+use std::{
+    collections::{BinaryHeap, HashMap},
+    hash::Hash,
+};
 
 use super::count_min_sketch::CountMinSketch;
 use error::Result;
 
 #[derive(Eq)]
-struct Counter<T: Hash + Eq> {
+struct Counter<'a, T: Hash + Eq + ?Sized> {
     item: T,
     count: usize,
 }
@@ -27,15 +30,15 @@ impl<T: Hash + Eq> PartialEq for Counter<T> {
     }
 }
 
-struct HeavyHitters<'a T: ?Sized + Hash> {
+struct HeavyHitters<'a, T: ?Sized + Hash + Eq> {
     min_sketch: CountMinSketch<T>,
-    heap: BinaryHeap<&T>,
+    heap: BinaryHeap<Counter<T>>,
     len: usize,
     heap_count: HashMap<&T, usize>,
     _p: PhantomData<T>,
 }
 
-impl<T: ?Sized + Hash> HeavyHitters<T> {
+impl<'a, T: ?Sized + Hash + Eq> HeavyHitters<T> {
     pub fn new(
         expected_num_items: usize,
         false_positive_rate: f64,
@@ -53,13 +56,13 @@ impl<T: ?Sized + Hash> HeavyHitters<T> {
         })
     }
 
-    pub fn insert(&mut self, item: &T) {
-        self.min_sketch.insert(item);
+    /*     pub fn insert(&mut self, item: T) {
+        self.min_sketch.insert(&item);
         self.len += 1;
 
-        self.update_heavy_hitters(item);
-    }
-
+        self.update_heavy_hitters(&item);
+    } */
+    /*
     fn update_heavy_hitters(&mut self, item: &T) {
         let estimate = self.min_sketch.estimated_count(item);
         //Update hashmap with 1
@@ -72,6 +75,6 @@ impl<T: ?Sized + Hash> HeavyHitters<T> {
         else{
             heap.
         }
-    }
+    } */
     //pub fn heap_count()
 }
