@@ -42,7 +42,7 @@ impl<T: ?Sized + Hash> CountMinSketch<T> {
         })
     }
 
-    pub fn insert(&mut self, key: &T) {
+    pub fn insert(&mut self, key: T) {
         let set_bits = self.get_set_bits(key, self.hasher);
         set_bits
             .iter()
@@ -51,7 +51,7 @@ impl<T: ?Sized + Hash> CountMinSketch<T> {
         self.len += 1
     }
 
-    pub fn estimated_count(&self, key: &T) -> u8 {
+    pub fn estimated_count(&self, key: T) -> u8 {
         let set_bits = self.get_set_bits(key, self.hasher);
         let mut estimated_count = u8::MAX;
         for (ki, &sb) in set_bits.iter().enumerate() {
@@ -65,7 +65,7 @@ impl<T: ?Sized + Hash> CountMinSketch<T> {
     }
 
     /// Computes the set of bit indices to be set for an item
-    fn get_set_bits(&self, item: &T, hasher: SipHasher24) -> Vec<usize> {
+    fn get_set_bits(&self, item: T, hasher: SipHasher24) -> Vec<usize> {
         let (hash1, hash2) = self.get_hash_pair(item, hasher);
         let mut set_bits = Vec::with_capacity(self.k);
         if self.k == 1 {
@@ -83,7 +83,7 @@ impl<T: ?Sized + Hash> CountMinSketch<T> {
         set_bits
     }
 
-    fn get_hash_pair(&self, item: &T, mut hasher: SipHasher24) -> (u64, u64) {
+    fn get_hash_pair(&self, item: T, mut hasher: SipHasher24) -> (u64, u64) {
         item.hash(&mut hasher);
         let hash128 = hasher.finish128().as_u128();
         let hash1 = (hash128 & 0xffff_ffff_ffff_ffff) as u64;
