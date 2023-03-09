@@ -7,7 +7,7 @@ use super::count_min_sketch::CountMinSketch;
 use error::Result;
 
 #[derive(Eq)]
-struct Counter<'a, T: Hash + Eq + ?Sized> {
+struct Counter<T: Hash + Eq + ?Sized> {
     item: T,
     count: usize,
 }
@@ -30,11 +30,11 @@ impl<T: Hash + Eq> PartialEq for Counter<T> {
     }
 }
 
-struct HeavyHitters<'a, T: ?Sized + Hash + Eq> {
+struct HeavyHitters<T: ?Sized + Hash + Eq> {
     min_sketch: CountMinSketch<T>,
     heap: BinaryHeap<Counter<T>>,
     len: usize,
-    heap_count: HashMap<&T, usize>,
+    heap_count: HashMap<T, usize>,
     _p: PhantomData<T>,
 }
 
