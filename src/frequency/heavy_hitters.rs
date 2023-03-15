@@ -4,10 +4,10 @@ use std::{
 };
 
 use super::count_min_sketch::CountMinSketch;
-use error::Result;
+use crate::error::PDSAResult as Result;
 
 #[derive(Eq)]
-struct Counter<T: Hash + Eq + ?Sized> {
+struct Counter<T: Hash + Eq> {
     item: T,
     count: usize,
 }
@@ -30,15 +30,14 @@ impl<T: Hash + Eq> PartialEq for Counter<T> {
     }
 }
 
-struct HeavyHitters<T: ?Sized + Hash + Eq> {
+struct HeavyHitters<T: Hash + Eq> {
     min_sketch: CountMinSketch<T>,
     heap: BinaryHeap<Counter<T>>,
     len: usize,
     heap_count: HashMap<T, usize>,
-    _p: PhantomData<T>,
 }
 
-impl<'a, T: ?Sized + Hash + Eq> HeavyHitters<T> {
+impl<'a, T: Hash + Eq> HeavyHitters<T> {
     pub fn new(
         expected_num_items: usize,
         false_positive_rate: f64,
@@ -52,7 +51,6 @@ impl<'a, T: ?Sized + Hash + Eq> HeavyHitters<T> {
             heap,
             len: 0,
             heap_count,
-            _p: PhantomData,
         })
     }
 
