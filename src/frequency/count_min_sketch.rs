@@ -1,3 +1,4 @@
+use std::borrow::Borrow;
 use std::cmp::min;
 use std::{hash::Hash, marker::PhantomData};
 
@@ -10,7 +11,7 @@ use crate::error::PDSAResult as Result;
 use super::{create_hasher_with_key, generate_random_key, optimal_k, optimal_m};
 
 #[derive(Debug)]
-pub struct CountMinSketch<T: ?Sized + Hash> {
+pub struct CountMinSketch<T: Hash + Eq> {
     expected_num_items: usize,
     false_positive_rate: f64,
     hasher: SipHasher24,
@@ -21,7 +22,7 @@ pub struct CountMinSketch<T: ?Sized + Hash> {
     _p: PhantomData<T>,
 }
 
-impl<T: ?Sized + Hash> CountMinSketch<T> {
+impl<T: Hash + Eq> CountMinSketch<T> {
     pub fn new(expected_num_items: usize, false_positive_rate: f64) -> Result<Self> {
         Self::validate(expected_num_items, false_positive_rate)?;
         let m = optimal_m(expected_num_items, false_positive_rate);
@@ -42,7 +43,11 @@ impl<T: ?Sized + Hash> CountMinSketch<T> {
         })
     }
 
-    pub fn insert(&mut self, key: T) {
+    pub fn insert<Q>(&mut self, key: &Q)
+    where
+        T: Borrow<Q>,
+        Q: Hash + Eq + ?Sized,
+    {
         let set_bits = self.get_set_bits(key, self.hasher);
         set_bits
             .iter()
