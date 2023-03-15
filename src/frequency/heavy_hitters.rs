@@ -60,19 +60,19 @@ impl<'a, T: Hash + Eq> HeavyHitters<T> {
 
         self.update_heavy_hitters(&item);
     } */
-    /*
-    fn update_heavy_hitters(&mut self, item: &T) {
-        let estimate = self.min_sketch.estimated_count(item);
-        //Update hashmap with 1
-        self.heap_count.entry(item).or_insert(0)+=1;
+    /* fn update_heavy_hitters(&mut self, item: &T) {
+           let estimate = self.min_sketch.estimated_count(item);
+           //Update hashmap with 1
+           self.heap_count.entry(item).or_insert(0)+=1;
 
-        self.heap_count.entry(item).or_insert(0)+=1;
-        if heap.len() < threshold {
-            self.heap.push(Counter{item, count: self.heap_count.get(item)});
-        }
-        else{
-            heap.
-        }
-    } */
+           self.heap_count.entry(item).or_insert(0)+=1;
+           if heap.len() < threshold {
+               self.heap.push(Counter{item, count: self.heap_count.get(item)});
+           }
+           else{
+               heap.
+           }
+       }
+    */
     //pub fn heap_count()
 }
