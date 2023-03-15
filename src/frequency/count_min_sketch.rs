@@ -11,7 +11,7 @@ use crate::error::PDSAResult as Result;
 use super::{create_hasher_with_key, generate_random_key, optimal_k, optimal_m};
 
 #[derive(Debug)]
-pub struct CountMinSketch<T: Hash + Eq> {
+pub struct CountMinSketch<K: Hash + Eq> {
     expected_num_items: usize,
     false_positive_rate: f64,
     hasher: SipHasher24,
@@ -19,10 +19,10 @@ pub struct CountMinSketch<T: Hash + Eq> {
     m: usize,
     k: usize,
     len: usize,
-    _p: PhantomData<T>,
+    _p: PhantomData<K>,
 }
 
-impl<T: Hash + Eq> CountMinSketch<T> {
+impl<K: Hash + Eq> CountMinSketch<K> {
     pub fn new(expected_num_items: usize, false_positive_rate: f64) -> Result<Self> {
         Self::validate(expected_num_items, false_positive_rate)?;
         let m = optimal_m(expected_num_items, false_positive_rate);
@@ -45,7 +45,7 @@ impl<T: Hash + Eq> CountMinSketch<T> {
 
     pub fn insert<Q>(&mut self, key: &Q)
     where
-        T: Borrow<Q>,
+        K: Borrow<Q>,
         Q: Hash + Eq + ?Sized,
     {
         let set_bits = self.get_set_bits(key, self.hasher);
@@ -56,7 +56,11 @@ impl<T: Hash + Eq> CountMinSketch<T> {
         self.len += 1
     }
 
-    pub fn estimated_count(&self, key: T) -> u8 {
+    pub fn estimated_count<Q>(&self, key: &Q) -> u8
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq + ?Sized,
+    {
         let set_bits = self.get_set_bits(key, self.hasher);
         let mut estimated_count = u8::MAX;
         for (ki, &sb) in set_bits.iter().enumerate() {
@@ -70,7 +74,11 @@ impl<T: Hash + Eq> CountMinSketch<T> {
     }
 
     /// Computes the set of bit indices to be set for an item
-    fn get_set_bits(&self, item: T, hasher: SipHasher24) -> Vec<usize> {
+    fn get_set_bits<Q>(&self, item: &Q, hasher: SipHasher24) -> Vec<usize>
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq + ?Sized,
+    {
         let (hash1, hash2) = self.get_hash_pair(item, hasher);
         let mut set_bits = Vec::with_capacity(self.k);
         if self.k == 1 {
@@ -88,7 +96,11 @@ impl<T: Hash + Eq> CountMinSketch<T> {
         set_bits
     }
 
-    fn get_hash_pair(&self, item: T, mut hasher: SipHasher24) -> (u64, u64) {
+    fn get_hash_pair<Q>(&self, item: &Q, mut hasher: SipHasher24) -> (u64, u64)
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq + ?Sized,
+    {
         item.hash(&mut hasher);
         let hash128 = hasher.finish128().as_u128();
         let hash1 = (hash128 & 0xffff_ffff_ffff_ffff) as u64;
@@ -264,7 +276,7 @@ mod tests {
 
     #[test]
     fn insert_and_check() -> Result<()> {
-        let mut bf: CountMinSketch<str> = CountMinSketch::new(10, 0.01)?;
+        let mut bf: CountMinSketch<&str> = CountMinSketch::new(10, 0.01)?;
         bf.insert("hello");
         bf.insert("world");
         assert_eq!(bf.number_of_hashes(), 7);
