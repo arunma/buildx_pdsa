@@ -1,6 +1,5 @@
 pub mod bloom_filter;
 pub mod counting_bloom_filter;
-pub mod counting_bloom_filter_standalone;
 
 use siphasher::sip128::SipHasher24;
 
