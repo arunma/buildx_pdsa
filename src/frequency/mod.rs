@@ -1,7 +1,6 @@
 use siphasher::sip128::SipHasher24;
 
 pub mod count_min_sketch;
-pub mod heavy_hitters;
 
 /// Generates a random 128-bit key used for hashing
 fn generate_random_key() -> [u8; 16] {
