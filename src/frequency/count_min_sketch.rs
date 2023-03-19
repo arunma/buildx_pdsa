@@ -146,7 +146,7 @@ impl<K: Hash + Eq> CountMinSketch<K> {
     /// ```
     /// use buildx_pdsa::frequency::count_min_sketch::CountMinSketch;
     ///
-    /// let mut filter = CountMinSketch::new(1000, 0.01).unwrap();
+    /// let mut filter: CountMinSketch<String> = CountMinSketch::new(1000, 0.01).unwrap();
     /// assert_eq!(filter.len(), 0);
     ///
     /// filter.insert("hello");
@@ -163,7 +163,7 @@ impl<K: Hash + Eq> CountMinSketch<K> {
     /// ```
     /// use buildx_pdsa::frequency::count_min_sketch::CountMinSketch;
     ///
-    /// let mut filter = CountMinSketch::new(1000, 0.01).unwrap();
+    /// let mut filter: CountMinSketch<String> = CountMinSketch::new(1000, 0.01).unwrap();
     /// assert_eq!(filter.is_empty(), true);
     ///
     /// filter.insert("hello");
@@ -180,7 +180,7 @@ impl<K: Hash + Eq> CountMinSketch<K> {
     /// ```
     /// use buildx_pdsa::frequency::count_min_sketch::CountMinSketch;
     ///
-    /// let mut filter = CountMinSketch::<str>::new(1000, 0.01).unwrap();
+    /// let mut filter = CountMinSketch::<&str>::new(1000, 0.01).unwrap();
     /// assert_eq!(filter.expected_num_items(), 1000);
     /// ```
     pub fn expected_num_items(&self) -> usize {
@@ -194,7 +194,7 @@ impl<K: Hash + Eq> CountMinSketch<K> {
     /// ```
     /// use buildx_pdsa::frequency::count_min_sketch::CountMinSketch;
     ///
-    /// let mut filter = CountMinSketch::<str>::new(1000, 0.01).unwrap();
+    /// let mut filter = CountMinSketch::<String>::new(1000, 0.01).unwrap();
     /// assert_eq!(filter.false_positive_rate(), 0.01);
     /// ```
     pub fn false_positive_rate(&self) -> f64 {
@@ -210,16 +210,16 @@ impl<K: Hash + Eq> CountMinSketch<K> {
     ///
     /// # Errors
     ///
-    /// Returns an `Input` error if any of the input parameters are invalid.
+    /// Returns an `InputError` error if any of the input parameters are invalid.
     ///
     fn validate(num_items: usize, false_positive_rate: f64) -> Result<()> {
         if num_items < 1 {
-            return Err(Input(
+            return Err(InputError(
                 "Number of items (num_items) must be greater than 0".into(),
             ));
         }
         if false_positive_rate <= 0.0 || false_positive_rate >= 1.0 {
-            return Err(Input(
+            return Err(InputError(
                 "False positive rate (false_positive_rate) must be between 0.0 and 1.0".into(),
             ));
         }
@@ -231,7 +231,7 @@ impl<K: Hash + Eq> CountMinSketch<K> {
 mod tests {
     use super::*;
 
-    use crate::error::PDSAError::Input;
+    use crate::error::PDSAError::InputError;
     use crate::error::PDSAResult as Result;
     use pretty_assertions::assert_eq;
 
@@ -255,7 +255,7 @@ mod tests {
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
-            Input("Number of items (num_items) must be greater than 0".into())
+            InputError("Number of items (num_items) must be greater than 0".into())
         );
     }
 
@@ -264,13 +264,17 @@ mod tests {
         let result_fp1: Result<CountMinSketch<&str>> = CountMinSketch::new(1000usize, 0f64);
         assert_eq!(
             result_fp1.unwrap_err(),
-            Input("False positive rate (false_positive_rate) must be between 0.0 and 1.0".into())
+            InputError(
+                "False positive rate (false_positive_rate) must be between 0.0 and 1.0".into()
+            )
         );
 
         let result_fp2: Result<CountMinSketch<&str>> = CountMinSketch::new(1000usize, 1f64);
         assert_eq!(
             result_fp2.unwrap_err(),
-            Input("False positive rate (false_positive_rate) must be between 0.0 and 1.0".into())
+            InputError(
+                "False positive rate (false_positive_rate) must be between 0.0 and 1.0".into()
+            )
         );
     }
 

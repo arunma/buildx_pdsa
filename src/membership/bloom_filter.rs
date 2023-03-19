@@ -210,7 +210,7 @@ impl<T: ?Sized + Hash> BloomFilter<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::error::PDSAError::Input;
+    use crate::error::PDSAError::InputError;
     use crate::error::PDSAResult as Result;
     use pretty_assertions::assert_eq;
 
@@ -238,7 +238,7 @@ mod tests {
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
-            Input("Number of items (num_items) must be greater than 0".into())
+            InputError("Number of items (num_items) must be greater than 0".into())
         );
     }
 
@@ -247,13 +247,17 @@ mod tests {
         let result_fp1: Result<BloomFilter<&str>> = BloomFilter::new(1000usize, 0f64);
         assert_eq!(
             result_fp1.unwrap_err(),
-            Input("False positive rate (false_positive_rate) must be between 0.0 and 1.0".into())
+            InputError(
+                "False positive rate (false_positive_rate) must be between 0.0 and 1.0".into()
+            )
         );
 
         let result_fp2: Result<BloomFilter<&str>> = BloomFilter::new(1000usize, 1f64);
         assert_eq!(
             result_fp2.unwrap_err(),
-            Input("False positive rate (false_positive_rate) must be between 0.0 and 1.0".into())
+            InputError(
+                "False positive rate (false_positive_rate) must be between 0.0 and 1.0".into()
+            )
         );
     }
 

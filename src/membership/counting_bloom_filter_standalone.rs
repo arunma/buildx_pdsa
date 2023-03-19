@@ -3,14 +3,11 @@ use std::{hash::Hash, marker::PhantomData};
 
 use siphasher::sip128::{Hasher128, SipHasher24};
 
+use crate::error::PDSAError::InputError;
 use crate::error::PDSAResult as Result;
-use crate::membership::{
-    create_hasher_with_key, generate_random_key, optimal_k, optimal_m, validate,
-};
 
 #[derive(Debug)]
 pub struct CountingBloomFilter<T: ?Sized + Hash> {
-    //TODO
     counter: Vec<u8>,
     m: usize,
     k: usize,
@@ -22,30 +19,6 @@ pub struct CountingBloomFilter<T: ?Sized + Hash> {
 }
 
 impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
-    /// Constructs a new Bloom filter with the given number of expected items and false positive rate, using default values for other parameters.
-    ///
-    /// # Arguments
-    ///
-    /// * `num_items` - The expected number of items to be inserted into the filter.
-    /// * `false_positive_rate` - The desired false positive rate for the filter, as a decimal fraction (e.g. 0.01 for 1%).
-    ///
-    /// # Errors
-    ///
-    /// Returns an error if the given parameters are invalid (e.g. the false positive rate is not between 0 and 1).
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
-    ///
-    /// assert_eq!(filter.len(), 0);
-    /// filter.insert(&"foo");
-    /// assert_eq!(filter.len(), 1);
-    /// assert_eq!(filter.expected_num_items(), 1000);
-    /// assert_eq!(filter.false_positive_rate(), 0.01);
-    /// ```
     pub fn new(expected_num_items: usize, false_positive_rate: f64) -> Result<Self> {
         validate(expected_num_items, false_positive_rate)?;
         let m = optimal_m(expected_num_items, false_positive_rate);
@@ -65,23 +38,6 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
         })
     }
 
-    /// Inserts the given item into the bloom filter, incrementing the counters for the bits that are set by the hash functions.
-    ///
-    /// # Arguments
-    ///
-    /// * `item` - A reference to the item to be inserted.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
-    /// filter.insert(&"foo");
-    ///
-    /// assert!(filter.contains(&"foo"));
-    /// assert!(!filter.contains(&"bar"));
-    /// ```
     pub fn insert(&mut self, item: &T) {
         self.get_set_bits(item, self.k, self.m, self.hasher)
             .iter()
@@ -89,23 +45,6 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
         self.len += 1;
     }
 
-    /// Deletes the given item from the Bloom filter, decrementing the counters for the bits that are set by the hash functions.
-    ///
-    /// # Arguments
-    ///
-    /// * `item` - A reference to the item to be deleted.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
-    /// filter.insert(&"foo");
-    /// filter.delete(&"foo");
-    ///
-    /// assert!(!filter.contains(&"foo"));
-    /// ```
     pub fn delete(&mut self, item: &T) {
         let is_present = self.contains(item);
         if is_present {
@@ -118,48 +57,12 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
         }
     }
 
-    /// Returns true if the given item is likely to be present in the Bloom filter, based on whether the counters for the bits that are set by the hash functions are all greater than zero.
-    ///
-    /// # Arguments
-    ///
-    /// * `item` - A reference to the item to be checked.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
-    /// filter.insert(&"foo");
-    ///
-    /// assert!(filter.contains(&"foo"));
-    /// assert!(!filter.contains(&"bar"));
-    /// ```
     pub fn contains(&self, item: &T) -> bool {
         self.get_set_bits(item, self.k, self.m, self.hasher)
             .iter()
             .all(|&i| self.counter[i] > 0)
     }
 
-    /// Returns an estimated count of the number of occurrences of the given item in the Bloom filter.
-    ///
-    /// # Arguments
-    ///
-    /// * `item` - A reference to the item whose count is to be estimated.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
-    /// filter.insert(&"foo");
-    /// filter.insert(&"bar");
-    ///
-    /// assert_eq!(filter.estimated_count(&"foo"), 1);
-    /// assert_eq!(filter.estimated_count(&"bar"), 1);
-    /// assert_eq!(filter.estimated_count(&"baz"), 0);
-    /// ```
     pub fn estimated_count(&self, item: &T) -> u8 {
         let mut retu = u8::MAX;
         for each in self.get_set_bits(item, self.k, self.m, self.hasher) {
@@ -173,100 +76,30 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
         retu
     }
 
-    /// Returns the number of hash functions used by the Bloom filter.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let bloom_filter = CountingBloomFilter::<String>::new(1000, 0.01).unwrap();
-    /// let k = bloom_filter.number_of_hashes();
-    /// assert_eq!(k, 7);
-    /// ```
-
     pub fn number_of_hashes(&self) -> usize {
         self.k
     }
 
-    /// Returns the number of bits used by the Bloom filter.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let bloom_filter = CountingBloomFilter::<&str>::new(1000, 0.01).unwrap();
-    /// let m = bloom_filter.number_of_counters();
-    /// assert_eq!(m, 9585);
-    /// ```
     pub fn number_of_counters(&self) -> usize {
         self.m
     }
 
-    /// Returns the number of items currently stored in the Bloom filter.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
-    /// assert_eq!(filter.len(), 0);
-    ///
-    /// filter.insert("hello");
-    /// assert_eq!(filter.len(), 1);
-    /// ```
     pub fn len(&self) -> usize {
         self.len
     }
 
-    /// Returns if there are currently no items stored in the Bloom filter.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let mut filter = CountingBloomFilter::new(1000, 0.01).unwrap();
-    /// assert_eq!(filter.is_empty(), true);
-    ///
-    /// filter.insert("hello");
-    /// assert_eq!(filter.is_empty(), false);
-    /// ```
     pub fn is_empty(&self) -> bool {
         self.len == 0
     }
 
-    /// Returns the expected number of items to be inserted into the Bloom filter.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let mut filter = CountingBloomFilter::<str>::new(1000, 0.01).unwrap();
-    /// assert_eq!(filter.expected_num_items(), 1000);
-    /// ```
     pub fn expected_num_items(&self) -> usize {
         self.expected_num_items
     }
 
-    /// Returns the false positive rate of the Bloom filter.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use buildx_pdsa::membership::counting_bloom_filter::CountingBloomFilter;
-    ///
-    /// let mut filter = CountingBloomFilter::<str>::new(1000, 0.01).unwrap();
-    /// assert_eq!(filter.false_positive_rate(), 0.01);
-    /// ```
     pub fn false_positive_rate(&self) -> f64 {
         self.false_positive_rate
     }
 
-    /// Computes the set of bit indices to be set for an item
     fn get_set_bits(&self, item: &T, k: usize, m: usize, hasher: SipHasher24) -> Vec<usize> {
         let (hash1, hash2) = self.get_hash_pair(item, hasher);
         let mut set_bits = Vec::with_capacity(k);
@@ -284,13 +117,49 @@ impl<T: ?Sized + Hash + Debug> CountingBloomFilter<T> {
         set_bits
     }
 
-    /// Computes the pair of 64-bit hashes for an item using the internal hasher
     fn get_hash_pair(&self, item: &T, mut hasher: SipHasher24) -> (u64, u64) {
         item.hash(&mut hasher);
         let hash128 = hasher.finish128().as_u128();
         let hash1 = (hash128 & 0xffff_ffff_ffff_ffff) as u64;
         let hash2 = (hash128 >> 64) as u64;
         (hash1, hash2)
+    }
+}
+
+fn validate(num_items: usize, false_positive_rate: f64) -> Result<()> {
+    if num_items < 1 {
+        return Err(InputError(
+            "Number of items (num_items) must be greater than 0".into(),
+        ));
+    }
+    if false_positive_rate <= 0.0 || false_positive_rate >= 1.0 {
+        return Err(InputError(
+            "False positive rate (false_positive_rate) must be between 0.0 and 1.0".into(),
+        ));
+    }
+    Ok(())
+}
+
+fn generate_random_key() -> [u8; 16] {
+    let mut seed = [0u8; 32];
+    getrandom::getrandom(&mut seed).unwrap();
+    seed[0..16].try_into().unwrap()
+}
+
+fn create_hasher_with_key(key: [u8; 16]) -> SipHasher24 {
+    SipHasher24::new_with_key(&key)
+}
+
+fn optimal_m(num_items: usize, false_positive_rate: f64) -> usize {
+    -(num_items as f64 * false_positive_rate.ln() / (2.0f64.ln().powi(2))).ceil() as usize
+}
+
+fn optimal_k(n: usize, m: usize) -> usize {
+    let k = (m as f64 / n as f64 * 2.0f64.ln()).round() as usize;
+    if k < 1 {
+        1
+    } else {
+        k
     }
 }
 

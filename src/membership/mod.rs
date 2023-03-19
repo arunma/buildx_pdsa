@@ -1,9 +1,10 @@
 pub mod bloom_filter;
 pub mod counting_bloom_filter;
+pub mod counting_bloom_filter_standalone;
 
 use siphasher::sip128::SipHasher24;
 
-use crate::error::PDSAError::Input;
+use crate::error::PDSAError::InputError;
 use crate::error::PDSAResult as Result;
 
 /// Validates the input parameters for a Bloom filter.
@@ -15,16 +16,16 @@ use crate::error::PDSAResult as Result;
 ///
 /// # Errors
 ///
-/// Returns an `Input` error if any of the input parameters are invalid.
+/// Returns an `InputError` error if any of the input parameters are invalid.
 ///
 fn validate(num_items: usize, false_positive_rate: f64) -> Result<()> {
     if num_items < 1 {
-        return Err(Input(
+        return Err(InputError(
             "Number of items (num_items) must be greater than 0".into(),
         ));
     }
     if false_positive_rate <= 0.0 || false_positive_rate >= 1.0 {
-        return Err(Input(
+        return Err(InputError(
             "False positive rate (false_positive_rate) must be between 0.0 and 1.0".into(),
         ));
     }
