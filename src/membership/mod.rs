@@ -45,7 +45,7 @@ fn create_hasher_with_key(key: [u8; 16]) -> SipHasher24 {
 
 /// Calculates the optimal size of the bit vector for a given number of items and false positive rate.
 ///
-/// The optimal number of hash functions is calculated using the
+/// The optimal number of buckets is calculated using the
 /// following formula:
 /// optimal_m = -(num_items * ln(false_positive_rate) / (2 * ln(2)^2))
 ///
