@@ -3,6 +3,7 @@
 //! answers or approximations to subsets are sufficient.
 //!
 
+pub mod cardinality;
 pub mod error;
 pub mod frequency;
 pub mod membership;
