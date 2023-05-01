@@ -1,11 +1,9 @@
-use std::borrow::Borrow;
 use std::cmp::min;
 use std::{hash::Hash, marker::PhantomData};
 
 use siphasher::sip128::Hasher128;
 use siphasher::sip128::SipHasher24;
 
-use crate::error::PDSAError::*;
 use crate::error::PDSAResult as Result;
 
 use super::{create_hasher_with_key, generate_random_key, optimal_k, optimal_m, validate};

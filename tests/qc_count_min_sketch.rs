@@ -12,7 +12,7 @@ struct CountMinSketchInput {
 }
 
 #[quickcheck_macros::quickcheck]
-fn quickcheck_counting_bloom_filter(input: CountMinSketchInput) {
+fn quickcheck_count_min_sketch(input: CountMinSketchInput) {
     dbg!(&input);
     let mut count_sketch = CountMinSketch::<u32>::new(input.epsilon, input.delta).unwrap();
 

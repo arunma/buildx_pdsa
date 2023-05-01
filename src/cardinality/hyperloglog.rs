@@ -1,61 +1,46 @@
+use core::num;
 use std::borrow::Borrow;
 use std::cmp::max;
-use std::collections::hash_map::DefaultHasher;
 use std::hash::Hasher;
 use std::{hash::Hash, marker::PhantomData};
 
 use siphasher::sip::SipHasher24;
 
-use crate::error::PDSAError::InputError;
 use crate::error::PDSAResult as Result;
 
-use super::{create_hasher_with_key, generate_random_key};
+use super::{calculate_alpha, create_hasher_with_key, generate_random_seed, validate};
 const TWO_POW_32: f64 = (1_i64 << 32_i64) as f64;
 
 pub struct HyperLogLog<T: Hash + Eq> {
-    bias_correction_alpha: f64,
+    alpha: f64,
     precision: usize,
-    buckets: usize,
-    counters: Vec<u8>,
+    num_buckets_m: usize,
+    buckets: Vec<u8>,
     hasher: SipHasher24,
     _p: PhantomData<T>,
 }
 
 impl<T: Hash + Eq> HyperLogLog<T> {
     pub fn new(error_rate: f64) -> Result<Self> {
-        Self::validate(error_rate)?;
-        let precision = (1.04 / error_rate).powi(2).ln().ceil() as usize;
-        let buckets = 1 << precision;
-        let bias_correction_alpha = Self::alpha(buckets);
-        let random_key = generate_random_key();
+        validate(error_rate)?;
+        let precision = (1.04 / error_rate).powi(2).log2().ceil() as usize; // log2(m)
+        let num_buckets_m = 1 << precision; // 2^precision
+        let alpha = calculate_alpha(num_buckets_m)?;
+
+        //Instantiate our single hashing function
+        let random_key = generate_random_seed();
         let hasher = create_hasher_with_key(random_key);
 
         let hll = HyperLogLog {
-            bias_correction_alpha,
+            alpha,
             precision,
-            buckets,
-            counters: vec![0; buckets],
+            num_buckets_m,
+            buckets: vec![0; num_buckets_m],
             hasher,
             _p: PhantomData,
         };
 
         Ok(hll)
-    }
-
-    fn alpha(buckets: usize) -> f64 {
-        match buckets {
-            16 => 0.673,
-            32 => 0.697,
-            64 => 0.709,
-            b => 0.723 / (1.0 + 1.079 / b as f64),
-        }
-    }
-
-    fn validate(error_rate: f64) -> Result<()> {
-        if error_rate <= 0.0 || error_rate >= 1.0 {
-            return Err(InputError("Error rate must be between 0.0 and 1.0".into()));
-        }
-        Ok(())
     }
 
     pub fn insert<Q>(&mut self, item: &Q)
@@ -66,69 +51,105 @@ impl<T: Hash + Eq> HyperLogLog<T> {
         let mut hasher = self.hasher;
         item.hash(&mut hasher);
         let hash = hasher.finish();
-        println!("Binary hash : {hash:b}");
-        println!("Precision: {}", self.precision);
-        let bucket_index = (hash >> (64 - self.precision)) as usize; //first bits
-        println!("bucket index : {bucket_index:b}");
-        println!("bucket index value : {bucket_index}");
-        let rest_bits_mask = 2u64.pow(64 - self.precision as u32) - 1;
-        println!("rest bits mask : {rest_bits_mask:b}");
-        let rest_bits = hash & rest_bits_mask; //rest of the bits
-        println!("rest bits : {rest_bits:b}");
-        let estimate: u8 = 1 + rest_bits.trailing_zeros() as u8;
-        println!("estimate : {estimate}");
-        let prev_estimate = self.counters[bucket_index];
-        println!("previous estimate : {prev_estimate}");
-        self.counters[bucket_index] = max(prev_estimate, estimate);
+
+        let bucket_index = (hash >> (64 - self.precision)) as usize; // Take the first precision bits
+        let estimate_bits_mask = (1 << (64 - self.precision)) - 1; // Create a mask for excluding the precision bits
+        let estimate_bits = hash & estimate_bits_mask; // Rest of the bits
+        let trailing_zeros = estimate_bits.leading_zeros() as u8 + 1; // Count the number of trailing zeros
+        let prev_estimate = self.buckets[bucket_index]; // Get the previous estimate
+        self.buckets[bucket_index] = max(prev_estimate, trailing_zeros) // Update the estimate if necessary
     }
 
     pub fn estimate(&self) -> usize {
-        let mut sum = 0f64;
-        for c in self.counters.iter() {
-            sum += (0.5_f64).powi(*c as i32);
-        }
-        let harmonic_mean = self.buckets as f64 / sum;
+        let m = self.num_buckets_m as f64;
 
-        let raw_estimate = self.bias_correction_alpha * self.buckets as f64 * harmonic_mean;
-
-        let estimate = match raw_estimate {
-            //Small range correction
-            sr if raw_estimate <= 2.5_f64 * self.buckets as f64 => {
-                let v = self.empty_registers() as f64;
-                if v == 0f64 {
-                    sr
-                } else {
-                    self.buckets as f64 * (self.buckets as f64 / v).ln()
-                }
+        let mut sum = 0.0_f64;
+        let mut empty_registers = 0;
+        for &v in self.buckets.iter() {
+            sum += 2.0_f64.powf(-(v as f64));
+            if v == 0 {
+                empty_registers += 1;
             }
-            //Medium range correction
-            mr if raw_estimate <= (TWO_POW_32 / 30f64) => mr,
-            //Large range correction
-            lr => -TWO_POW_32 * (1.0 - lr / TWO_POW_32).ln(),
-        };
+        }
+
+        let raw_estimate = self.alpha * m.powi(2) / sum;
+        let estimate = self.correct_for_estimate_size(raw_estimate, m, empty_registers);
 
         estimate as usize
     }
 
-    pub fn empty_registers(&self) -> usize {
-        self.counters.iter().filter(|&e| *e == 0).count()
+    fn correct_for_estimate_size(&self, raw_estimate: f64, m: f64, empty_registers: usize) -> f64 {
+        match raw_estimate {
+            //Small range correction
+            sr if raw_estimate <= 2.5_f64 * m => {
+                if empty_registers > 0 {
+                    m * (m / empty_registers as f64).ln()
+                } else {
+                    sr
+                }
+            }
+            //Medium range correction
+            mr if raw_estimate <= (TWO_POW_32 / 30.0_f64) => mr,
+            //Large range correction
+            lr => -TWO_POW_32 * (1.0 - lr / TWO_POW_32).ln(),
+        }
+    }
+
+    pub fn alpha(&self) -> f64 {
+        self.alpha
+    }
+
+    pub fn num_buckets_m(&self) -> usize {
+        self.num_buckets_m
+    }
+
+    pub fn precision(&self) -> usize {
+        self.precision
     }
 }
 
 #[cfg(test)]
-mod test_super {
+mod tests {
+    use std::collections::HashSet;
+
     use super::*;
 
     #[test]
-    fn test_insertion() -> Result<()> {
-        let mut hll: HyperLogLog<&str> = HyperLogLog::new(0.1)?;
-        hll.insert("hello");
-        hll.insert("hello1");
-        hll.insert("hello2");
-        hll.insert("hello3");
-        hll.insert("hello4");
-        let estimate = hll.estimate();
-        println!("Estimate : {estimate}");
+    fn test_b() -> Result<()> {
+        let error_rate = 0.01;
+        let hll = HyperLogLog::<&str>::new(error_rate)?;
+        assert_eq!(hll.precision, 14);
+        Ok(())
+    }
+
+    #[test]
+    fn test_insertion_with_duplicates() -> Result<()> {
+        let error_rate = 0.01;
+        let mut hll: HyperLogLog<&str> = HyperLogLog::new(error_rate)?;
+
+        let data = [
+            "foo", "foo", "foo", "bar", "baz", "bar", "qux", "quux", "corge", "grault", "garply",
+            "waldo",
+        ];
+
+        data.iter().for_each(|item| hll.insert(item));
+        let actual_count = data.iter().collect::<HashSet<_>>().iter().count();
+        let estimated_count = hll.estimate();
+
+        let error = ((actual_count as f64 - estimated_count as f64) / (actual_count as f64)).abs();
+
+        let estimated_error = 1.04 / ((1 << hll.precision()) as f64).sqrt();
+
+        println!("Actual count : {actual_count}. Estimated count is {estimated_count}");
+        println!("Actual Error is : {error}. Estimated error is {estimated_error}");
+        println!(
+            "Number of buckets : {}. Precision : {}",
+            hll.num_buckets_m(),
+            hll.precision()
+        );
+        assert!(error >= 0.0);
+        assert!(error <= estimated_error);
+
         Ok(())
     }
 }
